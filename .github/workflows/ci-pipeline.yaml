@@ -1,0 +1,41 @@
+name: MCP Microservices CI
+
+# This tells GitHub to run this pipeline every time you push code to the main branch
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Python for Model Service
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Test Model Service Syntax
+      run: |
+        cd model-service
+        python -m py_compile main.py
+        echo "Python syntax is clean!"
+
+    - name: Set up Node.js for Auth Service
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Test Auth Service Syntax
+      run: |
+        cd auth-service
+        node -c server.js
+        echo "Node.js syntax is clean!"
+
+    - name: Simulate Docker Build (Dry Run)
+      run: |
+        echo "In a production environment, we would run 'docker build' here."
+        echo "And then 'docker push' to an AWS ECR or Docker Hub registry."
